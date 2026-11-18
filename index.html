@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Opsis</title>
+    <link rel="stylesheet" href="/src/frame/frame.css" />
+  </head>
+  <body data-estado="arrancando">
+    <div class="dispositivo">
+      <div class="sombra"></div>
+      <canvas id="pantalla"></canvas>
+
+      <div class="espera">
+        <div class="spinner"></div>
+
+        <svg class="icono" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true">
+          <rect x="8" y="14" width="34" height="26" rx="5" />
+          <rect x="22" y="26" width="34" height="26" rx="5" fill="#1c1c24" />
+        </svg>
+        <h1>Esperando conexión</h1>
+        <ol>
+          <li><span>Abre el Centro de Control</span></li>
+          <li><span>Toca «Duplicar pantalla»</span></li>
+          <li><span>Elige «<b class="nombre" id="nombre-receptor">Opsis</b>»</span></li>
+        </ol>
+        <div class="estado"><span class="punto"></span>Listo · misma Wi-Fi</div>
+
+        <div class="error">
+          <h1>No se pudo iniciar</h1>
+          <div id="mensaje-error">El receptor AirPlay se ha cerrado.</div>
+          <button id="reintentar" type="button">Reintentar</button>
+        </div>
+      </div>
+
+      <div class="marco"></div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

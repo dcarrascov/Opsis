@@ -1,0 +1,53 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Opsis",
+  "version": "0.1.0",
+  "identifier": "io.github.dimacavidv.opsis",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:1420",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Opsis",
+        "width": 416,
+        "height": 780,
+        "transparent": true,
+        "decorations": false,
+        "shadow": false,
+        "resizable": false,
+        "maximizable": false,
+        "alwaysOnTop": true,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.ico"],
+    "externalBin": ["binaries/uxplay"],
+    "resources": {
+      "runtime/": "runtime/",
+      "../LICENSE": "LICENSE.txt",
+      "../THIRD-PARTY-NOTICES.md": "THIRD-PARTY-NOTICES.md"
+    },
+    "licenseFile": "../LICENSE",
+    "publisher": "Opsis",
+    "copyright": "GPL-3.0",
+    "shortDescription": "AirPlay receiver for Windows with an iPhone 13 frame",
+    "windows": {
+      "nsis": {
+        "installMode": "perMachine",
+        "installerHooks": "./windows/hooks.nsh"
+      }
+    }
+  }
+}

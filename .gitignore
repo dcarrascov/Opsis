@@ -1,0 +1,17 @@
+node_modules/
+.claude/
+dist/
+.env
+
+# Rust / Tauri
+src-tauri/target/
+src-tauri/gen/
+
+# Generados por scripts/collect-runtime.sh
+src-tauri/binaries/*
+!src-tauri/binaries/.gitkeep
+src-tauri/runtime/*
+!src-tauri/runtime/.gitkeep
+
+# Volcados de vídeo de UxPlay (-vdmp)
+*.h264

@@ -1,0 +1,232 @@
+:root {
+  --k: 0.8; /* 0.6 / 0.8 / 1 (tamaños S / M / L) */
+  font-family: 'Segoe UI Variable', 'Segoe UI', Inter, system-ui, sans-serif;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: transparent;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.dispositivo {
+  position: absolute;
+  inset: 32px; /* margen para la sombra (MARGEN en iphone13.ts) */
+  cursor: default;
+}
+
+/*
+ * Sombra: un elemento fijo con la forma del cuerpo, detrás de todo. Así no se recalcula
+ * con cada fotograma de vídeo (un filter: drop-shadow sobre el canvas sí lo haría).
+ * Tres capas: contacto (borde nítido), media y ambiente (suave y amplia, hacia abajo).
+ * Lo más lejano llega a 10 + 22 − 6 = 26 px: cabe en el margen de 32 sin cortarse.
+ */
+.sombra {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(432px * var(--k));
+  height: calc(886px * var(--k));
+  transform: translate(-50%, -50%);
+  border-radius: calc(68px * var(--k));
+  background: #0a0a0a;
+  box-shadow:
+    0 0 0 0.5px rgb(0 0 0 / 0.35),
+    0 1px 3px rgb(0 0 0 / 0.3),
+    0 4px 10px -2px rgb(0 0 0 / 0.25),
+    0 10px 22px -6px rgb(0 0 0 / 0.35);
+}
+.horizontal .sombra {
+  width: calc(886px * var(--k));
+  height: calc(432px * var(--k));
+}
+
+/*
+ * La pantalla mide 2 px más que el hueco del marco (1 px por lado) y queda metida bajo el
+ * cristal negro: así ningún borde suavizado ni medio píxel de redondeo deja ver una línea.
+ * object-fit: fill estira el vídeo al hueco (la diferencia de proporción es < 0,5 %),
+ * para que no queden franjas en los bordes.
+ */
+#pantalla,
+.espera {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(390px * var(--k) + 2px);
+  height: calc(844px * var(--k) + 2px);
+  transform: translate(-50%, -50%);
+  border-radius: calc(47.33px * var(--k) + 1px);
+  background: #000;
+  object-fit: fill;
+}
+.horizontal :is(#pantalla, .espera) {
+  width: calc(844px * var(--k) + 2px);
+  height: calc(390px * var(--k) + 2px);
+}
+
+.marco {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(440px * var(--k));
+  height: calc(894px * var(--k));
+  transform: translate(-50%, -50%) rotate(var(--giro, 0deg));
+  pointer-events: none;
+}
+.marco svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.horizontal .marco {
+  --giro: -90deg; /* muesca a la izquierda */
+}
+.horizontal.muesca-derecha .marco {
+  --giro: 90deg;
+}
+
+/* ---------- Pantalla de espera ---------- */
+
+.espera {
+  display: none;
+  box-sizing: border-box;
+  padding: calc(70px * var(--k)) calc(34px * var(--k)) calc(40px * var(--k));
+  background: linear-gradient(180deg, #0b0b0f, #1c1c24);
+  color: #f2f2f7;
+  font-size: calc(17px * var(--k));
+  transition: opacity 300ms ease;
+}
+body:not([data-estado='conectado']) .espera {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(18px * var(--k));
+}
+
+.espera .icono {
+  width: calc(64px * var(--k));
+  height: calc(64px * var(--k));
+  opacity: 0.9;
+}
+.espera h1 {
+  margin: 0;
+  font-size: calc(24px * var(--k));
+  font-weight: 600;
+  text-align: center;
+}
+.espera ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: paso;
+  display: grid;
+  gap: calc(14px * var(--k));
+  width: 100%;
+}
+.espera li {
+  counter-increment: paso;
+  display: grid;
+  grid-template-columns: calc(28px * var(--k)) 1fr;
+  gap: calc(10px * var(--k));
+  align-items: start;
+  line-height: 1.3;
+}
+.espera li::before {
+  content: counter(paso);
+  display: grid;
+  place-items: center;
+  width: calc(26px * var(--k));
+  height: calc(26px * var(--k));
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.12);
+  font-size: calc(14px * var(--k));
+  font-weight: 600;
+}
+.espera .nombre {
+  font-weight: 600;
+}
+.espera .estado {
+  margin-top: calc(10px * var(--k));
+  font-size: calc(14px * var(--k));
+  color: #a1a1aa;
+  display: flex;
+  align-items: center;
+  gap: calc(8px * var(--k));
+}
+.espera .punto {
+  width: calc(8px * var(--k));
+  height: calc(8px * var(--k));
+  border-radius: 50%;
+  background: #30d158;
+}
+.espera .error,
+.espera .spinner {
+  display: none;
+}
+
+/* Arrancando: solo un spinner */
+body[data-estado='arrancando'] .espera > :not(.spinner) {
+  display: none;
+}
+body[data-estado='arrancando'] .espera .spinner {
+  display: block;
+  width: calc(28px * var(--k));
+  height: calc(28px * var(--k));
+  border-radius: 50%;
+  border: calc(3px * var(--k)) solid rgb(255 255 255 / 0.15);
+  border-top-color: rgb(255 255 255 / 0.7);
+  animation: girar 0.9s linear infinite;
+}
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error: mensaje + Reintentar */
+body[data-estado^='error'] .espera > :not(.error) {
+  display: none;
+}
+body[data-estado^='error'] .espera .error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(14px * var(--k));
+  text-align: center;
+}
+.espera button {
+  font: inherit;
+  font-size: calc(15px * var(--k));
+  padding: calc(8px * var(--k)) calc(18px * var(--k));
+  border-radius: 999px;
+  border: 0;
+  background: #0a84ff;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* Grabando: punto rojo discreto sobre el canto */
+body.grabando .dispositivo::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ff453a;
+  box-shadow: 0 0 0 2px rgb(0 0 0 / 0.4);
+}
+
+/* Fondo de escritorio de ejemplo para el modo demo del navegador (GIF y capturas del README) */
+html.fondo-demo {
+  background:
+    radial-gradient(circle at 18% 22%, rgb(255 255 255 / 0.35), transparent 38%),
+    radial-gradient(circle at 85% 80%, rgb(255 190 120 / 0.45), transparent 45%),
+    linear-gradient(135deg, #8ec5fc 0%, #b8a4f3 50%, #f7c6b8 100%);
+}

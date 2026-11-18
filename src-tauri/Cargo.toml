@@ -1,0 +1,29 @@
+[package]
+name = "opsis"
+version = "0.1.0"
+description = "Receptor AirPlay para Windows con marco de iPhone 13"
+edition = "2021"
+license = "GPL-3.0-or-later"
+
+[lib]
+name = "opsis_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon"] }
+tauri-plugin-shell = "2"
+tauri-plugin-store = "2"
+tauri-plugin-single-instance = "2"
+tokio = { version = "1", features = ["net"] }
+socket2 = "0.5"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true
