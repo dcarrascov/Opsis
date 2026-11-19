@@ -32,11 +32,16 @@ pub fn lanzar(app: &AppHandle, puerto: u16, a: &Ajustes, activo: Arc<AtomicBool>
         format!("config-interval=1 ! udpsink host=127.0.0.1 port={puerto}{sync}"),
     ];
     if a.pin {
+        // PIN fijo: el iPhone lo pide solo la primera vez. -reg guarda los iPhone ya autorizados
+        // y -key la clave del receptor (si cambiara, todos tendrían que volver a meter el PIN).
         args.push("-pin".into());
+        args.push(a.codigo_pin.to_string());
         if let Ok(dir) = app.path().app_data_dir() {
             let _ = std::fs::create_dir_all(&dir);
             args.push("-reg".into());
             args.push(dir.join("uxplay.register").display().to_string());
+            args.push("-key".into());
+            args.push(dir.join("uxplay.pem").display().to_string());
         }
     }
     if a.ceder {

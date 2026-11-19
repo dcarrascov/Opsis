@@ -14,8 +14,11 @@ const PREDETERMINADAS: Prefs = { color: 'medianoche', tamano: 'M', muescaDerecha
 export function cargarPrefs(): Prefs {
   try {
     const p = { ...PREDETERMINADAS, ...JSON.parse(localStorage.getItem(CLAVE) ?? '{}') };
-    if (!(p.color in COLORES)) p.color = PREDETERMINADAS.color;
-    if (!(p.tamano in TAMANOS)) p.tamano = PREDETERMINADAS.tamano;
+    // Object.hasOwn y no `in`: `in` también acepta claves heredadas («constructor», «__proto__»…)
+    if (!Object.hasOwn(COLORES, p.color)) p.color = PREDETERMINADAS.color;
+    if (!Object.hasOwn(TAMANOS, p.tamano)) p.tamano = PREDETERMINADAS.tamano;
+    p.muescaDerecha = p.muescaDerecha === true;
+    p.siempreEncima = p.siempreEncima !== false;
     return p;
   } catch {
     return { ...PREDETERMINADAS };

@@ -33,13 +33,21 @@ impl Estado {
     }
 }
 
-/// Arranca (o reinicia) UxPlay y el bucle que manda el vídeo a la web. Devuelve el nombre del receptor.
+/// Lo que la pantalla de espera necesita saber del receptor.
+#[derive(serde::Serialize)]
+struct Receptor {
+    nombre: String,
+    /// PIN que pedirá el iPhone la primera vez (None si el PIN está desactivado).
+    pin: Option<String>,
+}
+
+/// Arranca (o reinicia) UxPlay y el bucle que manda el vídeo a la web.
 #[tauri::command]
 async fn iniciar_opsis(
     app: AppHandle,
     estado: State<'_, Estado>,
     on_video: Channel<InvokeResponseBody>,
-) -> Result<String, String> {
+) -> Result<Receptor, String> {
     estado.parar();
 
     let sock = stream::socket_local().map_err(|e| e.to_string())?;
@@ -53,7 +61,10 @@ async fn iniciar_opsis(
     *estado.bucle.lock().unwrap() = Some(b);
 
     let _ = app.emit("estado", "esperando");
-    Ok(ajustes.nombre)
+    Ok(Receptor {
+        pin: ajustes.pin.then(|| format!("{:04}", ajustes.codigo_pin)),
+        nombre: ajustes.nombre,
+    })
 }
 
 /// La web manda bytes crudos (PNG o vídeo) y aquí se guardan en Imágenes\Opsis o Vídeos\Opsis.

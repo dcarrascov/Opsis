@@ -23,8 +23,24 @@ pub struct H264Depay {
 
 const START: [u8; 4] = [0, 0, 0, 1];
 
+/// Tope de un fotograma. Un IDR 1080p de AirPlay ocupa unos cientos de KB: si llega a esto es que
+/// el flujo está roto o alguien manda paquetes sin bit marker, y sin tope la memoria crecería sin fin.
+pub const MAX_FOTOGRAMA: usize = 8 * 1024 * 1024;
+
 impl H264Depay {
     pub fn push(&mut self, pkt: &[u8]) -> Option<AccessUnit> {
+        let au = self.push_sin_tope(pkt);
+        if self.au.len() > MAX_FOTOGRAMA || self.fu.len() > MAX_FOTOGRAMA {
+            // Se descarta lo acumulado y se espera al siguiente fotograma completo
+            self.au = Vec::new();
+            self.fu = Vec::new();
+            self.key = false;
+            self.perdida = true;
+        }
+        au
+    }
+
+    fn push_sin_tope(&mut self, pkt: &[u8]) -> Option<AccessUnit> {
         // Cabecera RTP: 12 bytes + CSRC + extensión opcional
         if pkt.len() < 12 || pkt[0] >> 6 != 2 {
             return None;
@@ -141,6 +157,35 @@ mod tests {
         let mut d = H264Depay::default();
         let au = d.push(&rtp(1, true, &[24, 0, 2, 0x67, 7, 0, 2, 0x68, 8])).unwrap();
         assert_eq!(au.datos, [0, 0, 0, 1, 0x67, 7, 0, 0, 0, 1, 0x68, 8]);
+    }
+
+    #[test]
+    fn tope_de_memoria_sin_marker() {
+        let mut d = H264Depay::default();
+        let trozo = vec![0x41; 60_000];
+        for seq in 0..200u16 {
+            assert!(d.push(&rtp(seq, false, &trozo)).is_none());
+            assert!(d.au.len() <= MAX_FOTOGRAMA, "el buffer no debe pasar del tope");
+        }
+        // Tras descartar, el siguiente fotograma sale marcado con pérdida
+        let au = d.push(&rtp(200, true, &[0x65, 1])).unwrap();
+        assert!(au.perdida);
+    }
+
+    #[test]
+    fn paquetes_rotos_no_paniquean() {
+        let mut d = H264Depay::default();
+        for p in [
+            &[][..],
+            &[0x80; 11][..],
+            &[0xB0, 0x60, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xFF, 0xFF][..], // extensión gigante
+            &[0xA0, 0x60, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0xFF][..],             // padding mayor que el paquete
+            &[0x8F, 0x60, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0][..],                   // 15 CSRC que no existen
+            &[0x80, 0xE0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 24, 0xFF, 0xFF][..],   // STAP-A con tamaño falso
+            &[0x80, 0xE0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 28][..],               // FU-A sin cabecera
+        ] {
+            let _ = d.push(p);
+        }
     }
 
     #[test]

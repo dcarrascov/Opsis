@@ -230,3 +230,17 @@ html.fondo-demo {
     radial-gradient(circle at 85% 80%, rgb(255 190 120 / 0.45), transparent 45%),
     linear-gradient(135deg, #8ec5fc 0%, #b8a4f3 50%, #f7c6b8 100%);
 }
+
+/* PIN que pide el iPhone la primera vez */
+.espera li[hidden] {
+  display: none;
+}
+.espera .pin {
+  display: inline-block;
+  padding: 0 calc(8px * var(--k));
+  border-radius: calc(6px * var(--k));
+  background: rgb(255 255 255 / 0.14);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+}

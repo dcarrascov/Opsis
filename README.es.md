@@ -19,6 +19,7 @@ clases, tutoriales o capturas para un portfolio. Las capturas y las grabaciones 
 - **Marco de iPhone 13** dibujado por código: muesca, botones, 6 colores y 3 tamaños (S / M / L).
 - **Capturas** (PNG con fondo transparente, a 3×) en `Imágenes\Opsis` o al portapapeles.
 - **Grabación** con el marco en `Vídeos\Opsis` (MP4 o WebM, de momento sin audio).
+- **Protección con PIN**: la primera vez que se conecta cada iPhone pide un código de 4 cifras que aparece en la pantalla de espera, así nadie más en tu Wi-Fi puede duplicar su pantalla en tu PC. El código es aleatorio en cada instalación y los iPhone ya autorizados no lo vuelven a pedir.
 - El **audio** suena por los altavoces del PC.
 - Siempre encima, se arrastra a cualquier sitio, menú con clic derecho e icono en la bandeja.
 - Decodificación de vídeo por hardware (WebCodecs en WebView2).
@@ -33,6 +34,7 @@ clases, tutoriales o capturas para un portfolio. Las capturas y las grabaciones 
    Pide permisos de administrador para crear una regla del firewall para el receptor AirPlay (solo redes privadas).
 2. Abre **Opsis** desde el menú Inicio.
 3. En el iPhone: **Centro de Control → Duplicar pantalla → Opsis**.
+4. La primera vez, el iPhone pide un código: escribe el PIN que sale en la pantalla de espera de Opsis.
 
 El iPhone y el PC tienen que estar en la **misma Wi-Fi**, con la red en perfil **Privado** en Windows.
 

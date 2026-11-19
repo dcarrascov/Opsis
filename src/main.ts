@@ -98,6 +98,13 @@ function ponerEstado(estado: string) {
   }
 }
 
+/** Nombre del receptor y PIN (si está activado) en la pantalla de espera. */
+function mostrarReceptor(nombre: string, pin: string | null) {
+  document.querySelector('#nombre-receptor')!.textContent = nombre;
+  document.querySelector('#pin')!.textContent = pin ?? '';
+  document.querySelector<HTMLElement>('.paso-pin')!.hidden = !pin;
+}
+
 async function iniciarOpsis() {
   ponerEstado('arrancando');
   const canal = new Channel<ArrayBuffer>();
@@ -107,8 +114,8 @@ async function iniciarOpsis() {
     dec.push(new Uint8Array(buf, 8), (v.getUint8(1) & 1) === 1, v.getUint32(4, true));
   };
   try {
-    const nombre = await invoke<string>('iniciar_opsis', { onVideo: canal });
-    document.querySelector('#nombre-receptor')!.textContent = nombre;
+    const r = await invoke<{ nombre: string; pin: string | null }>('iniciar_opsis', { onVideo: canal });
+    mostrarReceptor(r.nombre, r.pin);
   } catch (e) {
     console.error(e);
     ponerEstado(`error:${e}`);
@@ -124,10 +131,11 @@ if (enTauri) {
   const params = new URLSearchParams(location.search);
   const demo = params.get('demo');
   const color = params.get('color');
-  if (color && color in COLORES) marco.innerHTML = svgMarco(COLORES[color as Color].canto);
+  if (color && Object.hasOwn(COLORES, color)) marco.innerHTML = svgMarco(COLORES[color as Color].canto);
   const tamano = params.get('tamano');
-  if (tamano && tamano in TAMANOS) document.documentElement.style.setProperty('--k', String(TAMANOS[tamano as Tamano]));
+  if (tamano && Object.hasOwn(TAMANOS, tamano)) document.documentElement.style.setProperty('--k', String(TAMANOS[tamano as Tamano]));
   if (params.has('fondo')) document.documentElement.classList.add('fondo-demo');
+  if (params.has('pin')) mostrarReceptor('Opsis', params.get('pin') || '4827');
   if (demo !== null) {
     const h = demo === 'horizontal';
     pintarDemo(pantalla, h);

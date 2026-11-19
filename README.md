@@ -19,6 +19,7 @@ or portfolio screenshots. Screenshots and recordings come out **with the frame**
 - **iPhone 13 frame** drawn in code: notch, buttons, 6 colours and 3 sizes (S / M / L).
 - **Screenshots** (PNG with transparent background, 3×) to `Pictures\Opsis` or the clipboard.
 - **Recording** with the frame to `Videos\Opsis` (MP4 or WebM, no audio yet).
+- **PIN protection**: the first time each iPhone connects it asks for a 4-digit code shown on the waiting screen, so nobody else on the same Wi-Fi can mirror to your PC. The code is random per installation and remembered devices do not ask again.
 - **Audio** plays through the PC speakers.
 - Always on top, drag it anywhere, right-click menu and tray icon.
 - Hardware video decoding (WebCodecs in WebView2).
@@ -33,6 +34,7 @@ or portfolio screenshots. Screenshots and recordings come out **with the frame**
    It asks for administrator rights to add a firewall rule for the AirPlay receiver (private networks only).
 2. Open **Opsis** from the Start menu.
 3. On the iPhone: **Control Center → Screen Mirroring → Opsis**.
+4. The first time, the iPhone asks for a code: type the PIN shown on the Opsis waiting screen.
 
 The iPhone and the PC must be on the **same Wi-Fi**, with the network set to **Private** in Windows.
 
