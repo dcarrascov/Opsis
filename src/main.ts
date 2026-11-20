@@ -21,6 +21,8 @@ const marco = document.querySelector<HTMLElement>('.marco')!;
 
 const prefs = cargarPrefs();
 let horizontal = false;
+/** Pantalla completa: solo la pantalla del iPhone, sin marco, tan grande como quepa. */
+let completa = false;
 
 // ---------- Aspecto: color, tamaño, orientación ----------
 
@@ -33,7 +35,7 @@ function aplicarColor(c: Color) {
 async function ajustarVentana() {
   const k = TAMANOS[prefs.tamano];
   document.documentElement.style.setProperty('--k', String(k));
-  if (!ventana) return;
+  if (!ventana || completa) return; // a pantalla completa la ventana no cambia al girar
   const w = Math.ceil(CAJA.w * k + MARGEN * 2);
   const h = Math.ceil(CAJA.h * k + MARGEN * 2);
   const [nw, nh] = horizontal ? [h, w] : [w, h];
@@ -75,6 +77,24 @@ async function aplicarSiempreEncima(si: boolean) {
   guardarPrefs(prefs);
   await ventana?.setAlwaysOnTop(si);
 }
+
+async function aplicarPantallaCompleta(si: boolean) {
+  if (si === completa) return;
+  completa = si;
+  document.body.classList.toggle('completa', si);
+  if (ventana) {
+    await ventana.setFullscreen(si);
+    if (!si) await ajustarVentana(); // vuelve al tamaño del marco (y a la orientación actual)
+  } else if (si) {
+    await document.documentElement.requestFullscreen?.().catch(() => {});
+  } else if (document.fullscreenElement) {
+    await document.exitFullscreen().catch(() => {});
+  }
+}
+// En el navegador también se puede salir con la tecla del propio navegador
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement && completa && !ventana) void aplicarPantallaCompleta(false);
+});
 
 aplicarColor(prefs.color);
 aplicarLadoMuesca(prefs.muescaDerecha);
@@ -200,7 +220,11 @@ async function alternarGrabacion() {
 // ---------- Interacción ----------
 
 disp.addEventListener('mousedown', (e) => {
-  if (e.button === 0 && !(e.target as HTMLElement).closest('button')) void ventana?.startDragging();
+  if (e.button !== 0 || (e.target as HTMLElement).closest('button')) return;
+  // Doble clic: pantalla completa sí/no. (Se mira en mousedown porque startDragging se queda
+  // con el ratón y el evento dblclick no llegaría.)
+  if (e.detail === 2) void aplicarPantallaCompleta(!completa);
+  else if (!completa) void ventana?.startDragging();
 });
 
 const atajos: Record<string, () => unknown> = {
@@ -212,7 +236,9 @@ const atajos: Record<string, () => unknown> = {
   'ctrl+2': () => aplicarTamano('M'),
   'ctrl+3': () => aplicarTamano('L'),
   'ctrl+g': () => aplicarLadoMuesca(!prefs.muescaDerecha),
-  escape: () => ventana?.hide(),
+  f11: () => aplicarPantallaCompleta(!completa),
+  'ctrl+f': () => aplicarPantallaCompleta(!completa),
+  escape: () => (completa ? aplicarPantallaCompleta(false) : ventana?.hide()),
 };
 
 window.addEventListener('keydown', (e) => {
@@ -230,6 +256,13 @@ window.addEventListener('contextmenu', async (e) => {
   const sep = () => PredefinedMenuItem.new({ item: 'Separator' });
   const menu = await Menu.new({
     items: [
+      await CheckMenuItem.new({
+        text: 'Pantalla completa',
+        checked: completa,
+        accelerator: 'F11',
+        action: () => void aplicarPantallaCompleta(!completa),
+      }),
+      await sep(),
       await CheckMenuItem.new({
         text: 'Siempre encima',
         checked: prefs.siempreEncima,

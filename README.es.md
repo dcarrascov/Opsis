@@ -21,6 +21,7 @@ clases, tutoriales o capturas para un portfolio. Las capturas y las grabaciones 
 - **Grabación** con el marco en `Vídeos\Opsis` (MP4 o WebM, de momento sin audio).
 - **Protección con PIN**: la primera vez que se conecta cada iPhone pide un código de 4 cifras que aparece en la pantalla de espera, así nadie más en tu Wi-Fi puede duplicar su pantalla en tu PC. El código es aleatorio en cada instalación y los iPhone ya autorizados no lo vuelven a pedir.
 - El **audio** suena por los altavoces del PC.
+- **Pantalla completa** (`F11` o doble clic): solo la pantalla del iPhone, lo más grande posible, sobre negro. `Esc` vuelve.
 - Siempre encima, se arrastra a cualquier sitio, menú con clic derecho e icono en la bandeja.
 - Decodificación de vídeo por hardware (WebCodecs en WebView2).
 
@@ -51,7 +52,8 @@ El iPhone y el PC tienen que estar en la **misma Wi-Fi**, con la red en perfil *
 | `Ctrl + T` | Siempre encima sí/no |
 | `Ctrl + 1 / 2 / 3` | Tamaño S / M / L |
 | `Ctrl + G` | Cambiar el lado de la muesca (en horizontal) |
-| `Esc` | Ocultar (icono de la bandeja) |
+| `F11` · doble clic | Pantalla completa sí/no |
+| `Esc` | Salir de pantalla completa, u ocultar (icono de la bandeja) |
 
 Con clic derecho sobre el móvil: tamaño, color y el resto. Al cerrar la ventana se cierra Opsis.
 

@@ -21,6 +21,7 @@ or portfolio screenshots. Screenshots and recordings come out **with the frame**
 - **Recording** with the frame to `Videos\Opsis` (MP4 or WebM, no audio yet).
 - **PIN protection**: the first time each iPhone connects it asks for a 4-digit code shown on the waiting screen, so nobody else on the same Wi-Fi can mirror to your PC. The code is random per installation and remembered devices do not ask again.
 - **Audio** plays through the PC speakers.
+- **Full screen** (`F11` or double-click): only the iPhone screen, as large as it fits, on black. `Esc` goes back.
 - Always on top, drag it anywhere, right-click menu and tray icon.
 - Hardware video decoding (WebCodecs in WebView2).
 
@@ -51,7 +52,8 @@ The iPhone and the PC must be on the **same Wi-Fi**, with the network set to **P
 | `Ctrl + T` | Always on top on/off |
 | `Ctrl + 1 / 2 / 3` | Size S / M / L |
 | `Ctrl + G` | Switch notch side (landscape) |
-| `Esc` | Hide (tray icon) |
+| `F11` · double-click | Full screen on/off |
+| `Esc` | Leave full screen, or hide (tray icon) |
 
 Right-click the phone for size, colour and the rest. Closing the window quits Opsis.
 
