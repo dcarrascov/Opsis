@@ -1,6 +1,6 @@
 [package]
 name = "opsis"
-version = "0.1.0"
+version = "0.2.0"
 description = "Receptor AirPlay para Windows con marco de iPhone 13"
 edition = "2021"
 license = "GPL-3.0-or-later"
